@@ -26,6 +26,12 @@ class Node {
     public String name;
     public int size;
 
+    public Node() {
+        this.key = null;
+        this.name = null;
+        this.size = 0;
+    }
+
     public Node(String key, String name, int size) {
         this.key = key;
         this.name = name;
@@ -35,8 +41,58 @@ class Node {
 
 public class rodrigonascimento_201600155174_poximdb {
 
+    public static Tree tree;
+
+    /**
+     * Reads the line of the input with the file information
+     * and returns a node containing it.
+     * 
+     * @param line  Input line.
+     * @return      Node containing the information from the input line.
+     */
+    public static Node makeNode(String line) {
+
+        Node node = new Node();
+        
+        int spaceIndex = line.indexOf(" ");
+        node.name = line.substring(0, spaceIndex);
+
+        line = line.substring(0, spaceIndex + 1);
+
+        spaceIndex = line.indexOf(" ");
+        node.size = Integer.parseInt(line.substring(0, spaceIndex));
+
+        line = line.substring(0, spaceIndex + 1);
+
+        node.key = line;
+
+        return node;
+
+    }
+
+    /**
+     * Inserts a new node into the tree.
+     * 
+     * @param newNode Node to be inserted on the tree.
+     */
+    public static void insertNode(Node newNode) {
+        // TODO: implement this method
+    }
+
+    /**
+     * Returns the requested node from the tree if found.
+     * Otherwise, returns null.
+     * 
+     * @param key   Key to be used in the search.
+     * @return      Requested node if found, null otherwise.
+     */
+    public static Node selectNode(String key) {
+        // TODO: implement this method
+    }
+
     /**
      * Writes content to file.
+     * 
      * @param fileName  Name of the file (with extension) to be writen.
      * @param content   Content to be writen on the file.
      * @throws FileNotFoundException
@@ -58,6 +114,53 @@ public class rodrigonascimento_201600155174_poximdb {
         try (FileInputStream inputStream = new FileInputStream(args[0])) {
             
             BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+
+            // Sets the order of the tree
+            tree = new Tree(Integer.parseInt(reader.readLine()));
+
+            Node node;
+
+            // Reads the files
+            for (int i = 0; i < Integer.parseInt(reader.readLine()); i++) {
+
+                node = makeNode(reader.readLine());
+                insertNode(node);
+            }
+
+            // Reads the commands
+            for (int i = 0; i < Integer.parseInt(reader.readLine()); i++) {
+
+                String line = reader.readLine();
+
+                String command = line.substring(0, 6);
+
+                switch (command) {
+
+                    case "SELECT":
+
+                        String hash = line.substring(6);
+                        node = selectNode(hash);
+
+                        System.out.println("[" + hash + "]");
+                        if (node != null)
+                            System.out.println(node.name + ":size=" + node.size + ",hash=" + node.key);
+                        else
+                            System.out.println("-");
+
+                        break;
+
+                    case "INSERT":
+
+                        node = makeNode(line.substring(6));
+                        insertNode(node);
+
+                        break;
+
+                    default:
+                        throw new RuntimeException("Invalid command");
+                }
+
+            }
 
         } catch (Exception ex) {
             ex.printStackTrace();
