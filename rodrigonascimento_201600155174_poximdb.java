@@ -7,6 +7,32 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 
+class Tree {
+
+    public int order;
+    public Node[] keys;
+    public Tree[] children;
+
+    public Tree(int order) {
+        this.order = order;
+        this.keys = new Node[order - 1];
+        this.children = new Tree[order];
+    }
+}
+
+class Node {
+
+    public String key;
+    public String name;
+    public int size;
+
+    public Node(String key, String name, int size) {
+        this.key = key;
+        this.name = name;
+        this.size = size;
+    }
+}
+
 public class rodrigonascimento_201600155174_poximdb {
 
     /**
