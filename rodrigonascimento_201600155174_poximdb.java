@@ -57,12 +57,12 @@ public class rodrigonascimento_201600155174_poximdb {
         int spaceIndex = line.indexOf(" ");
         node.name = line.substring(0, spaceIndex);
 
-        line = line.substring(0, spaceIndex + 1);
+        line = line.substring(spaceIndex + 1);
 
         spaceIndex = line.indexOf(" ");
         node.size = Integer.parseInt(line.substring(0, spaceIndex));
 
-        line = line.substring(0, spaceIndex + 1);
+        line = line.substring(spaceIndex + 1);
 
         node.key = line;
 
@@ -86,8 +86,31 @@ public class rodrigonascimento_201600155174_poximdb {
      * @param key   Key to be used in the search.
      * @return      Requested node if found, null otherwise.
      */
-    public static Node selectNode(String key) {
-        // TODO: implement this method
+    public static Node selectNode(Tree tree, String key) {
+
+        if (tree == null)
+            return null;
+
+        for (int i = 0; i < tree.order - 1; i++) {
+
+            if (tree.keys[i] == null) {
+
+                return selectNode(tree.children[i], key);
+
+            } else if (key.compareTo(tree.keys[i].key) == 0) {
+
+                return tree.keys[i];
+
+            } else if (key.compareTo(tree.keys[i].key) < 0) {
+
+                return selectNode(tree.children[i], key);
+
+            } else if (tree.order - 1 == i) {
+                return selectNode(tree.children[i + 1], key);
+            }
+        }
+
+        return null;
     }
 
     /**
@@ -121,14 +144,16 @@ public class rodrigonascimento_201600155174_poximdb {
             Node node;
 
             // Reads the files
-            for (int i = 0; i < Integer.parseInt(reader.readLine()); i++) {
+            int numberOfFiles = Integer.parseInt(reader.readLine());
+            for (int i = 0; i < numberOfFiles; i++) {
 
                 node = makeNode(reader.readLine());
                 insertNode(node);
             }
 
             // Reads the commands
-            for (int i = 0; i < Integer.parseInt(reader.readLine()); i++) {
+            int numberOfCommands = Integer.parseInt(reader.readLine());
+            for (int i = 0; i < numberOfCommands; i++) {
 
                 String line = reader.readLine();
 
@@ -138,8 +163,8 @@ public class rodrigonascimento_201600155174_poximdb {
 
                     case "SELECT":
 
-                        String hash = line.substring(6);
-                        node = selectNode(hash);
+                        String hash = line.substring(7);
+                        node = selectNode(tree, hash);
 
                         System.out.println("[" + hash + "]");
                         if (node != null)
@@ -151,7 +176,7 @@ public class rodrigonascimento_201600155174_poximdb {
 
                     case "INSERT":
 
-                        node = makeNode(line.substring(6));
+                        node = makeNode(line.substring(7));
                         insertNode(node);
 
                         break;
