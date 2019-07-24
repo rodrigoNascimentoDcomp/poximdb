@@ -14,7 +14,7 @@
             "type": "java",
             "name": "poximdb",
             "request": "launch",
-            "mainClass": "rodrigonascimento_201600155174_poximdb.java",
+            "mainClass": "rodrigonascimento_201600155174_poximdb",
             "args": ["poximdb.input", "poximdb.output"]
         }
     ]
