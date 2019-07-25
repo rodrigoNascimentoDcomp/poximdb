@@ -42,6 +42,14 @@ class Node {
 public class rodrigonascimento_201600155174_poximdb {
 
     public static Tree tree;
+    public static int order;
+
+    /*public static Node[] orderNodes(Node[] nodes) {
+        Node aux;
+        for (int i = 0; i < nodes.length; i++) {
+
+        }
+    }*/
 
     /**
      * Reads the line of the input with the file information
@@ -75,8 +83,64 @@ public class rodrigonascimento_201600155174_poximdb {
      * 
      * @param newNode Node to be inserted on the tree.
      */
-    public static void insertNode(Node newNode) {
-        // TODO: implement this method
+    public static Tree insertNode(Tree tree, Node newNode) {
+
+        // If the tree is null, add to the first key position
+        if (tree == null) {
+            tree = new Tree(order);
+            tree.keys[0] = newNode;
+            return tree;
+        }
+
+        // If the tree is a leaf
+        if (tree.children[0] == null) {
+
+            // If the keys are not full, add to them
+            if (tree.keys[tree.order - 2] == null) {
+
+                for (int i = 0; i < tree.order - 1; i++) {
+
+                    if (tree.keys[i] == null) {
+                        tree.keys[i] = newNode;
+                    } else if (newNode.key.compareTo(tree.keys[i].key) < 0) {
+                        
+                        Node auxNode = tree.keys[i];
+                        tree.keys[i] = newNode;
+                        return insertNode(tree, auxNode);
+
+                    }
+        
+                }
+
+                return tree;
+            }
+
+            // If the keys are full, divide
+            if (tree.keys[tree.order - 2] != null) {
+                
+            }
+
+            return tree;
+
+        } else {
+
+            for (int i = 0; i < tree.order - 1; i++) {
+
+                // Go to the left children if the current key is null or bigger than the new one
+                if (tree.keys[i] == null || newNode.key.compareTo(tree.keys[i].key) < 0) {
+
+                    return insertNode(tree.children[i], newNode);
+
+                } else if (i == tree.order - 2) {
+                    // Go right if it's the last key and the new node is bigger
+
+                    return insertNode(tree.children[tree.order - 1], newNode);
+                }
+            }
+
+            return tree;
+
+        }
     }
 
     /**
@@ -139,7 +203,7 @@ public class rodrigonascimento_201600155174_poximdb {
             BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
 
             // Sets the order of the tree
-            tree = new Tree(Integer.parseInt(reader.readLine()));
+            order = Integer.parseInt(reader.readLine());
 
             Node node;
 
@@ -148,7 +212,7 @@ public class rodrigonascimento_201600155174_poximdb {
             for (int i = 0; i < numberOfFiles; i++) {
 
                 node = makeNode(reader.readLine());
-                insertNode(node);
+                tree = insertNode(tree, node);
             }
 
             // Reads the commands
@@ -177,7 +241,7 @@ public class rodrigonascimento_201600155174_poximdb {
                     case "INSERT":
 
                         node = makeNode(line.substring(7));
-                        insertNode(node);
+                        tree = insertNode(tree, node);
 
                         break;
 
