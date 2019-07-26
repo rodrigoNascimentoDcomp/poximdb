@@ -175,16 +175,12 @@ public class rodrigonascimento_201600155174_poximdb {
 
                 // Go to the left children if the current key
                 // is null or bigger or equal than the new one
-                if (tree.keys[i] == null
-                    || newNode.key.compareTo(tree.keys[i].key) < 0
-                    || newNode.key.compareTo(tree.keys[i].key) == 0) {
-
-                    tree.children[i] = insertNode(tree.children[i], newNode);
-
-                } else if (i == tree.order - 2) {
+                if (i == tree.order - 2) {
                     // Go right if it's the last key and the new node is bigger
 
                     tree.children[tree.order - 1] = insertNode(tree.children[tree.order - 1], newNode);
+                } else {
+                    tree.children[i] = insertNode(tree.children[i], newNode);
                 }
             }
 
