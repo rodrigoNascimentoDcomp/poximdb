@@ -134,10 +134,7 @@ public class rodrigonascimento_201600155174_poximdb {
 
                 Node[] nodeArray = new Node[tree.order];
 
-                // TODO: find a better way to copy the array
-                for (int i = 0; i < tree.order - 1; i++) {
-                    nodeArray[i] = tree.keys[i];
-                }
+                System.arraycopy(tree.keys, 0, nodeArray, 0, tree.keys.length);
                 
                 nodeArray = insertNode(nodeArray, newNode);
                 int middleIndex = (int) nodeArray.length / 2;
