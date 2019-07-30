@@ -147,6 +147,36 @@ public class rodrigonascimento_201600155174_poximdb {
 
             rightTree.children[j] = firstTree.children[firstTree.order - 1];
             
+        } else {
+
+            finalTree.keys[0] = firstTree.keys[midIndex];
+
+            // Left child
+            int j = 0;
+            for (int i = 0; i < midIndex; i++) {
+                leftTree.keys[j] = firstTree.keys[i];
+                leftTree.children[j] = firstTree.children[i];
+                j++;
+            }
+
+            leftTree.children[j] = firstTree.children[j];
+
+            // Right child
+            j = 0;
+            for (int i = midIndex + 1; i < rightTree.order; i++) {
+                if (i == secondTreeIndex) {
+                    rightTree.keys[j] = secondTree.keys[0];
+                    rightTree.children[j] = secondTree.children[0];
+                    rightTree.children[++j] = secondTree.children[1];
+                } else if (i < secondTreeIndex) {
+                    rightTree.keys[j] = firstTree.keys[i];
+                    rightTree.children[j++] = firstTree.children[i];
+                } else {
+                    rightTree.keys[j] = firstTree.keys[i];
+                    rightTree.children[++j] = firstTree.children[i];
+                }
+            }
+            
         }
 
         finalTree.children[0] = leftTree;
@@ -322,7 +352,7 @@ public class rodrigonascimento_201600155174_poximdb {
                                 tree.children[i] = auxTree.children[0];
                                 tree.children[i + 1] = auxTree.children[1];
                             } else {
-                                tree = splitTree(tree, auxTree, i);
+                                tree = splitTree(tree, auxTree, i + 1);
                             }
                         }
                     }
@@ -390,7 +420,7 @@ public class rodrigonascimento_201600155174_poximdb {
         
         try (FileInputStream inputStream = new FileInputStream(args[0])) {
 
-            Tree oldTree = new Tree(3);
+            /*Tree oldTree = new Tree(3);
             Tree left = new Tree(3);
             Tree mid = new Tree(3);
             Tree right = new Tree(3);
@@ -398,24 +428,24 @@ public class rodrigonascimento_201600155174_poximdb {
             Tree leftNew = new Tree(3);
             Tree rightNew = new Tree(3);
 
-            oldTree.keys[0] = new Node("7", "7", 7);
-            oldTree.keys[1] = new Node("9", "9", 9);
-            left.keys[0] = new Node("5", "5", 5);
-            left.keys[1] = new Node("6", "6", 6);
-            mid.keys[0] = new Node("8", "8", 8);
-            right.keys[0] = new Node("10", "10", 10);
+            oldTree.keys[0] = new Node("2", "2", 2);
+            oldTree.keys[1] = new Node("4", "4", 4);
+            left.keys[0] = new Node("1", "1", 1);
+            mid.keys[0] = new Node("3", "3", 3);
+            right.keys[0] = new Node("5", "5", 5);
+            right.keys[0] = new Node("6", "6", 6);
             oldTree.children[0] = left;
             oldTree.children[1] = mid;
             oldTree.children[2] = right;
 
-            newT.keys[0] = new Node("5", "5", 5);
-            leftNew.keys[0] = new Node("4", "4", 4);
-            rightNew.keys[0] = new Node("6", "6", 6);
+            newT.keys[0] = new Node("6", "6", 6);
+            leftNew.keys[0] = new Node("5", "5", 5);
+            rightNew.keys[0] = new Node("7", "7", 7);
             newT.children[0] = leftNew;
             newT.children[1] = rightNew;
             
 
-            splitTree(oldTree, newT, 0);
+            splitTree(oldTree, newT, 2);*/
             
             BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
 
