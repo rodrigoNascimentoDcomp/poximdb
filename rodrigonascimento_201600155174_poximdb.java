@@ -71,6 +71,153 @@ public class rodrigonascimento_201600155174_poximdb {
 
     }
 
+    public static Node[] addToNodeArray(Node[] nodes, Node newNode) {
+        Node[] nodeArray = new Node[tree.order];
+
+        System.arraycopy(nodes, 0, nodeArray, 0, nodes.length);
+        
+        nodeArray = insertNode(nodeArray, newNode);
+
+        return nodeArray;
+    }
+
+    public static Tree splitTree(Tree firstTree, Tree secondTree, int secondTreeIndex) {
+        Tree finalTree = new Tree(firstTree.order);
+        Tree leftTree = new Tree(firstTree.order);
+        Tree rightTree = new Tree(firstTree.order);
+
+        // Gets the middle index of the original tree
+        int midIndex;
+        if (firstTree.order % 2 == 0) {
+            midIndex = (int) (firstTree.order / 2) - 1;
+        } else {
+            midIndex = (int) firstTree.order / 2;
+        }
+
+        if (secondTreeIndex == midIndex) {
+
+            finalTree.keys[0] = secondTree.keys[0];
+
+            // Left child
+            for (int i = 0; i < midIndex; i++) {
+                leftTree.keys[i] = firstTree.keys[i];
+                leftTree.children[i] = firstTree.children[i];
+            }
+
+            leftTree.children[midIndex] = secondTree.children[0];
+
+            // Right child
+            int j = 0;
+            for (int i = midIndex; i < firstTree.order - 1; i++) {
+                rightTree.keys[j] = firstTree.keys[i];
+                rightTree.children[++j] = firstTree.children[i + 1];
+            }
+
+            rightTree.children[midIndex - 1] = secondTree.children[1];
+            
+        } else if (secondTreeIndex < midIndex) {
+
+            finalTree.keys[0] = firstTree.keys[midIndex - 1];
+
+            // Left child
+            int j = 0;
+            for (int i = 0; i < midIndex; i++) {
+                if (i == secondTreeIndex) {
+                    leftTree.keys[j] = secondTree.keys[0];
+                    leftTree.children[j] = secondTree.children[0];
+                    leftTree.children[++j] = secondTree.children[1];
+                } else if (i < secondTreeIndex) {
+                    leftTree.keys[j] = firstTree.keys[i];
+                    leftTree.children[j++] = firstTree.children[i];
+                } else {
+                    leftTree.keys[j] = firstTree.keys[i];
+                    leftTree.children[++j] = firstTree.children[i];
+                }
+            }
+
+            leftTree.children[midIndex] = firstTree.children[midIndex];
+
+            // Right child
+            j = 0;
+            for (int i = midIndex; i < firstTree.order - 1; i++) {
+                rightTree.keys[j] = firstTree.keys[i];
+                rightTree.children[j] = firstTree.children[i];
+                j++;
+            }
+
+            rightTree.children[j] = firstTree.children[firstTree.order - 1];
+            
+        }
+
+        finalTree.children[0] = leftTree;
+        finalTree.children[1] = rightTree;
+
+        return finalTree;
+    }
+
+    public static Tree splitTree(Tree tree, Node newNode) {
+        Node[] nodeArray = new Node[tree.order];
+
+        System.arraycopy(tree.keys, 0, nodeArray, 0, tree.keys.length);
+        
+        nodeArray = insertNode(nodeArray, newNode);
+        int middleIndex;
+        if (nodeArray.length % 2 == 0)
+            middleIndex = (int) (nodeArray.length / 2) - 1;
+        else
+            middleIndex = (int) nodeArray.length / 2;
+
+        Tree newTree = new Tree(tree.order);
+        Tree leftChild = new Tree(tree.order);
+        Tree rightChild = new Tree(tree.order);
+
+        // Makes the middle node of the array
+        // the new parent node
+        newTree.keys[0] = nodeArray[middleIndex];
+
+        // Copies the first half of the node array
+        // into the left child
+        for (int i = 0; i < middleIndex; i++) {
+            leftChild.keys[i] = nodeArray[i];
+        }
+
+        // Copies the second half of the array
+        // into the right child
+        int j = 0;
+        for (int i = middleIndex + 1; i < nodeArray.length; i++) {
+            rightChild.keys[j] = nodeArray[i];
+            j++;
+        }
+
+        // Adds the children to the tree
+        newTree.children[0] = leftChild;
+        newTree.children[1] = rightChild;
+
+        return newTree;
+    }
+
+    /**
+     * Gets a subtree out of a tree.
+     * 
+     * @param tree      Original tree.
+     * @param begining  Starting index.
+     * @param end       End index (exclusive).
+     * @return          Subtree.
+     */
+    public static Tree getSubTree(Tree tree, int begining, int end) {
+        
+        Tree newTree = new Tree(tree.order);
+
+        for (int i = begining; i < end; i++) {
+            newTree.keys[i] = tree.keys[i];
+            newTree.children[i] = tree.children[i];
+        }
+
+        newTree.children[end] = tree.children[end];
+
+        return newTree;
+    }
+
     /**
      * Inserts a new node into a Node array.
      * 
@@ -117,8 +264,7 @@ public class rodrigonascimento_201600155174_poximdb {
                     if (tree.keys[i] == null) {
                         tree.keys[i] = newNode;
                         return tree;
-                    } else if (newNode.key.compareTo(tree.keys[i].key) < 0
-                                || newNode.key.compareTo(tree.keys[i].key) == 0) {
+                    } else if (newNode.key.compareTo(tree.keys[i].key) <= 0) {
                         
                         Node auxNode = tree.keys[i];
                         tree.keys[i] = newNode;
@@ -131,41 +277,7 @@ public class rodrigonascimento_201600155174_poximdb {
 
             } else {
                 // Create a new Tree
-
-                Node[] nodeArray = new Node[tree.order];
-
-                System.arraycopy(tree.keys, 0, nodeArray, 0, tree.keys.length);
-                
-                nodeArray = insertNode(nodeArray, newNode);
-                int middleIndex = (int) nodeArray.length / 2;
-
-                Tree newTree = new Tree(tree.order);
-                Tree leftChild = new Tree(tree.order);
-                Tree rightChild = new Tree(tree.order);
-
-                // Makes the middle node of the array
-                // the new parent node
-                newTree.keys[0] = nodeArray[middleIndex];
-
-                // Copies the first half of the node array
-                // into the left child
-                for (int i = 0; i < middleIndex; i++) {
-                    leftChild.keys[i] = nodeArray[i];
-                }
-
-                // Copies the second half of the array
-                // into the right child
-                int j = 0;
-                for (int i = middleIndex + 1; i < nodeArray.length; i++) {
-                    rightChild.keys[j] = nodeArray[i];
-                    j++;
-                }
-
-                // Adds the children to the tree
-                newTree.children[0] = leftChild;
-                newTree.children[1] = rightChild;
-
-                return newTree;
+                return splitTree(tree, newNode);
             }
 
         } else {
@@ -173,14 +285,47 @@ public class rodrigonascimento_201600155174_poximdb {
 
             for (int i = 0; i < tree.order - 1; i++) {
 
-                // Go to the left children if the current key
-                // is null or bigger or equal than the new one
-                if (i == tree.order - 2) {
-                    // Go right if it's the last key and the new node is bigger
+                Tree auxTree = new Tree(tree.order);
+                
+                if (tree.keys[i] == null || newNode.key.compareTo(tree.keys[i].key) <= 0) {
 
-                    tree.children[tree.order - 1] = insertNode(tree.children[tree.order - 1], newNode);
-                } else {
-                    tree.children[i] = insertNode(tree.children[i], newNode);
+                    auxTree = insertNode(tree.children[i], newNode);  // Go left
+
+                    if (auxTree.keys[0] != null) {
+                        // A leaf was returned
+                        if (auxTree.children[0] == null) {
+
+                            tree.children[i] = auxTree;
+
+                        } else {  // A tree was returned
+
+                            
+
+                            if (tree.keys[i] == null) {
+                                tree.keys[i] = auxTree.keys[0];
+                                tree.children[i] = auxTree.children[0];
+                                tree.children[i + 1] = auxTree.children[1];
+                            }
+                        }
+                    }
+                } else if (i == tree.order - 2) {
+                    auxTree = insertNode(tree.children[i + 1], newNode);  // Go right
+
+                    if (auxTree.keys[0] != null) {
+                        // A leaf was returned
+                        if (auxTree.children[0] == null) {
+                            tree.children[i + 1] = auxTree;
+                        } else {  // A tree was returned
+    
+                            if (tree.keys[i] == null) {
+                                tree.keys[i] = auxTree.keys[0];
+                                tree.children[i] = auxTree.children[0];
+                                tree.children[i + 1] = auxTree.children[1];
+                            } else {
+                                tree = splitTree(tree, auxTree, i);
+                            }
+                        }
+                    }
                 }
             }
 
@@ -214,7 +359,7 @@ public class rodrigonascimento_201600155174_poximdb {
 
                 return selectNode(tree.children[i], key);
 
-            } else if (tree.order - 1 == i) {
+            } else if (tree.order - 2 == i) {
                 return selectNode(tree.children[i + 1], key);
             }
         }
@@ -244,6 +389,33 @@ public class rodrigonascimento_201600155174_poximdb {
     public static void main(String[] args) {
         
         try (FileInputStream inputStream = new FileInputStream(args[0])) {
+
+            Tree oldTree = new Tree(3);
+            Tree left = new Tree(3);
+            Tree mid = new Tree(3);
+            Tree right = new Tree(3);
+            Tree newT = new Tree(3);
+            Tree leftNew = new Tree(3);
+            Tree rightNew = new Tree(3);
+
+            oldTree.keys[0] = new Node("7", "7", 7);
+            oldTree.keys[1] = new Node("9", "9", 9);
+            left.keys[0] = new Node("5", "5", 5);
+            left.keys[1] = new Node("6", "6", 6);
+            mid.keys[0] = new Node("8", "8", 8);
+            right.keys[0] = new Node("10", "10", 10);
+            oldTree.children[0] = left;
+            oldTree.children[1] = mid;
+            oldTree.children[2] = right;
+
+            newT.keys[0] = new Node("5", "5", 5);
+            leftNew.keys[0] = new Node("4", "4", 4);
+            rightNew.keys[0] = new Node("6", "6", 6);
+            newT.children[0] = leftNew;
+            newT.children[1] = rightNew;
+            
+
+            splitTree(oldTree, newT, 0);
             
             BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
 
