@@ -291,9 +291,14 @@ public class rodrigonascimento_201600155174_poximdb {
 
                 for (int i = 0; i < tree.order - 1; i++) {
 
+                    // Adds to the first empty node
                     if (tree.keys[i] == null) {
+
                         tree.keys[i] = newNode;
                         return tree;
+
+                    // Swaps the new node with the current node
+                    // and ads the current node to the tree again through recursion
                     } else if (newNode.key.compareTo(tree.keys[i].key) <= 0) {
                         
                         Node auxNode = tree.keys[i];
@@ -317,9 +322,10 @@ public class rodrigonascimento_201600155174_poximdb {
 
                 Tree auxTree = new Tree(tree.order);
                 
+                // Go left
                 if (tree.keys[i] == null || newNode.key.compareTo(tree.keys[i].key) <= 0) {
 
-                    auxTree = insertNode(tree.children[i], newNode);  // Go left
+                    auxTree = insertNode(tree.children[i], newNode);
 
                     if (auxTree.keys[0] != null) {
                         // A leaf was returned
@@ -329,16 +335,21 @@ public class rodrigonascimento_201600155174_poximdb {
 
                         } else {  // A tree was returned
 
-                            
-
-                            if (tree.keys[i] == null) {
-                                tree.keys[i] = auxTree.keys[0];
-                                tree.children[i] = auxTree.children[0];
-                                tree.children[i + 1] = auxTree.children[1];
+                            if (auxTree != tree.children[i]) {
+                                if (tree.keys[i] == null) {
+                                    tree.keys[i] = auxTree.keys[0];
+                                    tree.children[i] = auxTree.children[0];
+                                    tree.children[i + 1] = auxTree.children[1];
+                                } else {
+                                    return splitTree(tree, auxTree, i);
+                                }
                             }
+                            
                         }
                     }
+
                 } else if (i == tree.order - 2) {
+                    
                     auxTree = insertNode(tree.children[i + 1], newNode);  // Go right
 
                     if (auxTree.keys[0] != null) {
@@ -361,6 +372,45 @@ public class rodrigonascimento_201600155174_poximdb {
 
             return tree;
         }
+    }
+
+    public static Tree insertTree(Tree tree, Tree subtree) {
+
+        if (tree == null) {
+            return subtree;
+        }
+
+        // tree is a leaf
+        if (tree.children[0] == null) {
+
+            boolean addRight = false;
+            // Iterates over the tree to insert the new tree
+            for (int i = 0; i < tree.order - 1; i++) {
+
+                // if there's a tree left on the right, split
+
+                // Compares the key on the position i of the original tree
+                // with the key from the subtree
+                int comparison = tree.keys[i].key.compareTo(subtree.keys[0].key);
+                if (comparison > 0) {
+                    addRight = true;
+                }
+
+                if (!addRight) {
+                    
+                }
+
+            }
+
+            return tree;
+
+        } else {    // tree is not a leaf
+
+            // Go down
+
+            return tree;
+        }
+        
     }
 
     /**
