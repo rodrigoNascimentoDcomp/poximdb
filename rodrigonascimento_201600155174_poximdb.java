@@ -304,7 +304,7 @@ public class rodrigonascimento_201600155174_poximdb {
                         break;
 
                     // Swaps the new node with the current node
-                    // and ads the current node to the tree again through recursion
+                    // and ads the current node to the tree again
                     } else if (newNode.key.compareTo(tree.keys[i].key) <= 0) {
                         
                         Node auxNode = tree.keys[i];
@@ -315,7 +315,7 @@ public class rodrigonascimento_201600155174_poximdb {
                 }
 
             } else {
-                // Create a new Tree
+                // Creates a new Tree
                 tree = splitLeaf(tree, newNode);
             }
 
@@ -333,41 +333,38 @@ public class rodrigonascimento_201600155174_poximdb {
 
                     auxTree = insertNode(tree.children[i], newNode);
 
-                    if (auxTree.keys[0] != null) {
-                        // A leaf was returned
-                        if (auxTree.children[0] == null) {
+                    // A leaf was returned
+                    if (auxTree.children[0] == null) {
+                        // The leaf was already added to the tree
+                        break;
 
-                            tree.children[i] = auxTree;
-                            break;
+                    } else {  // A tree was returned
 
-                        } else {  // A tree was returned
+                        // If the returned tree wasn't already added to the tree
+                        if (auxTree != tree.children[i]) {
 
-                            // If the returned tree wasn't already added to the tree
-                            if (auxTree != tree.children[i]) {
+                            // If the current position on the tree is empty
+                            if (tree.keys[i] == null) {
 
-                                // If the current position on the tree is empty
-                                if (tree.keys[i] == null) {
+                                tree.keys[i] = auxTree.keys[0];
+                                tree.children[i] = auxTree.children[0];
+                                tree.children[i + 1] = auxTree.children[1];
 
-                                    tree.keys[i] = auxTree.keys[0];
-                                    tree.children[i] = auxTree.children[0];
-                                    tree.children[i + 1] = auxTree.children[1];
+                            // If the keys array is not full
+                            } else if (tree.keys[tree.order - 2] == null) {
 
-                                // If the keys array is not full
-                                } else if (tree.keys[tree.order - 2] == null) {
-
-                                    tree = shiftRight(tree, i);
-                                    tree.keys[i] = auxTree.keys[0];
-                                    tree.children[i] = auxTree.children[0];
-                                    tree.children[i + 1] = auxTree.children[1];
-                                    
-                                } else {
-                                    tree = splitTree(tree, auxTree, i);
-                                }
+                                tree = shiftRight(tree, i);
+                                tree.keys[i] = auxTree.keys[0];
+                                tree.children[i] = auxTree.children[0];
+                                tree.children[i + 1] = auxTree.children[1];
+                                
+                            } else {
+                                tree = splitTree(tree, auxTree, i);
                             }
-
-                            break;
-                            
                         }
+
+                        break;
+                        
                     }
 
                 } else if (i == tree.order - 2) {
