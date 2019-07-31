@@ -292,34 +292,7 @@ public class rodrigonascimento_201600155174_poximdb {
         // If the tree is a leaf
         if (tree.children[0] == null) {
 
-            // If the keys are not full, add to them
-            if (tree.keys[tree.order - 2] == null) {
-
-                for (int i = 0; i < tree.order - 1; i++) {
-
-                    // Adds to the first empty node
-                    if (tree.keys[i] == null) {
-
-                        tree.keys[i] = newNode;
-                        break;
-
-                    // Swaps the new node with the current node
-                    // and ads the current node to the tree again
-                    } else if (newNode.key.compareTo(tree.keys[i].key) <= 0) {
-                        
-                        Node auxNode = tree.keys[i];
-                        tree.keys[i] = newNode;
-                        newNode = auxNode;
-
-                    }
-                }
-
-            } else {
-                // Creates a new Tree
-                tree = splitLeaf(tree, newNode);
-            }
-
-            return tree;
+            tree = insertToLeaf(tree, newNode);
 
         } else {
             // Go down
@@ -327,72 +300,110 @@ public class rodrigonascimento_201600155174_poximdb {
             for (int i = 0; i < tree.order - 1; i++) {
 
                 Tree auxTree = new Tree(tree.order);
-                
-                // Go left
+
                 if (tree.keys[i] == null || newNode.key.compareTo(tree.keys[i].key) <= 0) {
 
-                    auxTree = insertNode(tree.children[i], newNode);
+                    auxTree = insertNode(tree.children[i], newNode);    // Go left
 
-                    // A leaf was returned
-                    if (auxTree.children[0] == null) {
-                        // The leaf was already added to the tree
-                        break;
+                    // If a tree was returned, it was already added from inside
+                    // the method to the tree passed as argument.
 
-                    } else {  // A tree was returned
+                    tree = insertToTree(tree, auxTree, i);
 
-                        // If the returned tree wasn't already added to the tree
-                        if (auxTree != tree.children[i]) {
-
-                            // If the current position on the tree is empty
-                            if (tree.keys[i] == null) {
-
-                                tree.keys[i] = auxTree.keys[0];
-                                tree.children[i] = auxTree.children[0];
-                                tree.children[i + 1] = auxTree.children[1];
-
-                            // If the keys array is not full
-                            } else if (tree.keys[tree.order - 2] == null) {
-
-                                tree = shiftRight(tree, i);
-                                tree.keys[i] = auxTree.keys[0];
-                                tree.children[i] = auxTree.children[0];
-                                tree.children[i + 1] = auxTree.children[1];
-                                
-                            } else {
-                                tree = splitTree(tree, auxTree, i);
-                            }
-                        }
-
-                        break;
-                        
-                    }
+                    break;
 
                 } else if (i == tree.order - 2) {
                     
-                    auxTree = insertNode(tree.children[i + 1], newNode);  // Go right
+                    auxTree = insertNode(tree.children[i + 1], newNode);    // Go right
 
-                    if (auxTree.keys[0] != null) {
-                        // A leaf was returned
-                        if (auxTree.children[0] == null) {
-                            tree.children[i + 1] = auxTree;
-                        } else {  // A tree was returned
-    
-                            if (tree.keys[i] == null) {
-                                tree.keys[i] = auxTree.keys[0];
-                                tree.children[i] = auxTree.children[0];
-                                tree.children[i + 1] = auxTree.children[1];
-                            } else {
-                                tree = splitTree(tree, auxTree, i + 1);
-                            }
-                        }
-                    }
+                    tree = insertToTree(tree, auxTree, i);
+
+                    break;
+                }
+            }            
+        }
+
+        return tree;
+    }
+
+    /**
+     * Inserts a new node into a leaf.
+     * 
+     * @param tree      Leaf that will have the node added to.
+     * @param newNode   Node to be added to the tree.
+     * @return          Leaf with the added node.
+     */
+    public static Tree insertToLeaf(Tree tree, Node newNode) {
+
+        // If the keys array is not full, add to it
+        if (tree.keys[tree.order - 2] == null) {
+
+            for (int i = 0; i < tree.order - 1; i++) {
+
+                // Adds to the first empty node
+                if (tree.keys[i] == null) {
+
+                    tree.keys[i] = newNode;
+                    break;
+
+                // Swaps the new node with the current node
+                // and ads the current node to the tree again
+                } else if (newNode.key.compareTo(tree.keys[i].key) <= 0) {
+                    
+                    Node auxNode = tree.keys[i];
+                    tree.keys[i] = newNode;
+                    newNode = auxNode;
+
                 }
             }
 
-            return tree;
+        } else {
+            // Creates a new Tree
+            tree = splitLeaf(tree, newNode);
         }
+
+        return tree;
     }
 
+    /**
+     * Inserts a new branch into a tree.
+     * 
+     * @param tree      Original tree.
+     * @param branch    Branch to be added to the tree.
+     * @param index     Index on witch the branch will be added.
+     * @return          Tree with the added branch.
+     */
+    public static Tree insertToTree(Tree tree, Tree branch, int index) {
+
+        // A tree was returned
+        if (branch.children[0] != null) {
+
+            // If the returned tree wasn't already added to the tree
+            if (branch != tree.children[index]) {
+
+                if (tree.keys[index] == null) {
+
+                    tree.keys[index] = branch.keys[0];
+                    tree.children[index] = branch.children[0];
+                    tree.children[index + 1] = branch.children[1];
+
+                // If the keys array is not full
+                } else if (tree.keys[tree.order - 2] == null) {
+
+                    tree = shiftRight(tree, index);
+                    tree.keys[index] = branch.keys[0];
+                    tree.children[index] = branch.children[0];
+                    tree.children[index + 1] = branch.children[1];
+                    
+                } else {
+                    tree = splitTree(tree, branch, index);
+                }
+            }
+        }
+
+        return tree;
+    }
+    
     /**
      * Returns the requested node from the tree if found.
      * Otherwise, returns null.
@@ -420,6 +431,7 @@ public class rodrigonascimento_201600155174_poximdb {
                 return selectNode(tree.children[i], key);
 
             } else if (tree.order - 2 == i) {
+
                 return selectNode(tree.children[i + 1], key);
             }
         }
@@ -470,7 +482,6 @@ public class rodrigonascimento_201600155174_poximdb {
             for (int i = 0; i < numberOfCommands; i++) {
 
                 String line = reader.readLine();
-
                 String command = line.substring(0, 6);
 
                 switch (command) {
