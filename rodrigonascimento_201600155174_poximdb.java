@@ -71,17 +71,39 @@ public class rodrigonascimento_201600155174_poximdb {
 
     }
 
-    public static Node[] addToNodeArray(Node[] nodes, Node newNode) {
-        Node[] nodeArray = new Node[tree.order];
+    /**
+     * Shifts the branches of the tree to the right
+     * from startIndex onwards. The last position in the array 
+     * should be empty.
+     * 
+     * @param tree          Tree that will have it's branches shifted.
+     * @param startIndex    First position of the array that will be shifted.
+     * @return              Tree with an empty position.
+     */
+    public static Tree shiftRight(Tree tree, int startIndex) {
 
-        System.arraycopy(nodes, 0, nodeArray, 0, nodes.length);
-        
-        nodeArray = insertNode(nodeArray, newNode);
+        for (int i = tree.order - 2; i > startIndex; i--) {
 
-        return nodeArray;
+            tree.keys[i] = tree.keys[i - 1];
+            tree.children[i + 1] = tree.children[i];
+        }
+
+        tree.keys[startIndex] = null;
+        tree.children[startIndex + 1] = null;
+
+        return tree;
     }
 
+    /**
+     * Adds a new branch to a tree and splits it.
+     * 
+     * @param firstTree         Original tree.
+     * @param secondTree        Branch to be added.
+     * @param secondTreeIndex   Position in witch the new tree will be added.
+     * @return                  Split tree.
+     */
     public static Tree splitTree(Tree firstTree, Tree secondTree, int secondTreeIndex) {
+
         Tree finalTree = new Tree(firstTree.order);
         Tree leftTree = new Tree(firstTree.order);
         Tree rightTree = new Tree(firstTree.order);
@@ -131,11 +153,9 @@ public class rodrigonascimento_201600155174_poximdb {
                     leftTree.children[j++] = firstTree.children[i];
                 } else {
                     leftTree.keys[j] = firstTree.keys[i];
-                    leftTree.children[++j] = firstTree.children[i];
+                    leftTree.children[++j] = firstTree.children[i + 1];
                 }
             }
-
-            leftTree.children[midIndex] = firstTree.children[midIndex];
 
             // Right child
             j = 0;
@@ -185,7 +205,15 @@ public class rodrigonascimento_201600155174_poximdb {
         return finalTree;
     }
 
-    public static Tree splitTree(Tree tree, Node newNode) {
+    /**
+     * Adds a node to a leaf and splits it.
+     * 
+     * @param tree      Original leaf.
+     * @param newNode   Node to be added.
+     * @return          Split leaf.
+     */
+    public static Tree splitLeaf(Tree tree, Node newNode) {
+
         Node[] nodeArray = new Node[tree.order];
 
         System.arraycopy(tree.keys, 0, nodeArray, 0, tree.keys.length);
@@ -222,28 +250,6 @@ public class rodrigonascimento_201600155174_poximdb {
         // Adds the children to the tree
         newTree.children[0] = leftChild;
         newTree.children[1] = rightChild;
-
-        return newTree;
-    }
-
-    /**
-     * Gets a subtree out of a tree.
-     * 
-     * @param tree      Original tree.
-     * @param begining  Starting index.
-     * @param end       End index (exclusive).
-     * @return          Subtree.
-     */
-    public static Tree getSubTree(Tree tree, int begining, int end) {
-        
-        Tree newTree = new Tree(tree.order);
-
-        for (int i = begining; i < end; i++) {
-            newTree.keys[i] = tree.keys[i];
-            newTree.children[i] = tree.children[i];
-        }
-
-        newTree.children[end] = tree.children[end];
 
         return newTree;
     }
@@ -295,7 +301,7 @@ public class rodrigonascimento_201600155174_poximdb {
                     if (tree.keys[i] == null) {
 
                         tree.keys[i] = newNode;
-                        return tree;
+                        break;
 
                     // Swaps the new node with the current node
                     // and ads the current node to the tree again through recursion
@@ -303,17 +309,17 @@ public class rodrigonascimento_201600155174_poximdb {
                         
                         Node auxNode = tree.keys[i];
                         tree.keys[i] = newNode;
-                        return insertNode(tree, auxNode);
+                        newNode = auxNode;
 
                     }
                 }
 
-                return tree;
-
             } else {
                 // Create a new Tree
-                return splitTree(tree, newNode);
+                tree = splitLeaf(tree, newNode);
             }
+
+            return tree;
 
         } else {
             // Go down
@@ -332,18 +338,34 @@ public class rodrigonascimento_201600155174_poximdb {
                         if (auxTree.children[0] == null) {
 
                             tree.children[i] = auxTree;
+                            break;
 
                         } else {  // A tree was returned
 
+                            // If the returned tree wasn't already added to the tree
                             if (auxTree != tree.children[i]) {
+
+                                // If the current position on the tree is empty
                                 if (tree.keys[i] == null) {
+
                                     tree.keys[i] = auxTree.keys[0];
                                     tree.children[i] = auxTree.children[0];
                                     tree.children[i + 1] = auxTree.children[1];
+
+                                // If the keys array is not full
+                                } else if (tree.keys[tree.order - 2] == null) {
+
+                                    tree = shiftRight(tree, i);
+                                    tree.keys[i] = auxTree.keys[0];
+                                    tree.children[i] = auxTree.children[0];
+                                    tree.children[i + 1] = auxTree.children[1];
+                                    
                                 } else {
-                                    return splitTree(tree, auxTree, i);
+                                    tree = splitTree(tree, auxTree, i);
                                 }
                             }
+
+                            break;
                             
                         }
                     }
@@ -372,45 +394,6 @@ public class rodrigonascimento_201600155174_poximdb {
 
             return tree;
         }
-    }
-
-    public static Tree insertTree(Tree tree, Tree subtree) {
-
-        if (tree == null) {
-            return subtree;
-        }
-
-        // tree is a leaf
-        if (tree.children[0] == null) {
-
-            boolean addRight = false;
-            // Iterates over the tree to insert the new tree
-            for (int i = 0; i < tree.order - 1; i++) {
-
-                // if there's a tree left on the right, split
-
-                // Compares the key on the position i of the original tree
-                // with the key from the subtree
-                int comparison = tree.keys[i].key.compareTo(subtree.keys[0].key);
-                if (comparison > 0) {
-                    addRight = true;
-                }
-
-                if (!addRight) {
-                    
-                }
-
-            }
-
-            return tree;
-
-        } else {    // tree is not a leaf
-
-            // Go down
-
-            return tree;
-        }
-        
     }
 
     /**
@@ -469,33 +452,6 @@ public class rodrigonascimento_201600155174_poximdb {
     public static void main(String[] args) {
         
         try (FileInputStream inputStream = new FileInputStream(args[0])) {
-
-            /*Tree oldTree = new Tree(3);
-            Tree left = new Tree(3);
-            Tree mid = new Tree(3);
-            Tree right = new Tree(3);
-            Tree newT = new Tree(3);
-            Tree leftNew = new Tree(3);
-            Tree rightNew = new Tree(3);
-
-            oldTree.keys[0] = new Node("2", "2", 2);
-            oldTree.keys[1] = new Node("4", "4", 4);
-            left.keys[0] = new Node("1", "1", 1);
-            mid.keys[0] = new Node("3", "3", 3);
-            right.keys[0] = new Node("5", "5", 5);
-            right.keys[0] = new Node("6", "6", 6);
-            oldTree.children[0] = left;
-            oldTree.children[1] = mid;
-            oldTree.children[2] = right;
-
-            newT.keys[0] = new Node("6", "6", 6);
-            leftNew.keys[0] = new Node("5", "5", 5);
-            rightNew.keys[0] = new Node("7", "7", 7);
-            newT.children[0] = leftNew;
-            newT.children[1] = rightNew;
-            
-
-            splitTree(oldTree, newT, 2);*/
             
             BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
 
