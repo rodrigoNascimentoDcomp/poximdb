@@ -118,7 +118,7 @@ public class rodrigonascimento_201600155174_poximdb {
 
         if (secondTreeIndex == midIndex) {
 
-            finalTree.keys[0] = secondTree.keys[0];
+            finalTree.keys[0] = firstTree.keys[midIndex];
 
             // Left child
             for (int i = 0; i < midIndex; i++) {
@@ -126,16 +126,17 @@ public class rodrigonascimento_201600155174_poximdb {
                 leftTree.children[i] = firstTree.children[i];
             }
 
-            leftTree.children[midIndex] = secondTree.children[0];
+            leftTree.children[midIndex] = firstTree.children[midIndex];
 
-            // Right child
-            int j = 0;
-            for (int i = midIndex; i < firstTree.order - 1; i++) {
+            rightTree = secondTree;
+
+            // Fills the right tree with the remaining nodes
+            // from the right side of the original tree
+            int j = 1;
+            for (int i = midIndex + 1; i < firstTree.order - 2; i++) {
                 rightTree.keys[j] = firstTree.keys[i];
                 rightTree.children[++j] = firstTree.children[i + 1];
             }
-
-            rightTree.children[midIndex - 1] = secondTree.children[1];
             
         } else if (secondTreeIndex < midIndex) {
 
@@ -172,18 +173,16 @@ public class rodrigonascimento_201600155174_poximdb {
             finalTree.keys[0] = firstTree.keys[midIndex];
 
             // Left child
-            int j = 0;
             for (int i = 0; i < midIndex; i++) {
-                leftTree.keys[j] = firstTree.keys[i];
-                leftTree.children[j] = firstTree.children[i];
-                j++;
+                leftTree.keys[i] = firstTree.keys[i];
+                leftTree.children[i] = firstTree.children[i];
             }
 
-            leftTree.children[j] = firstTree.children[j];
+            leftTree.children[midIndex] = firstTree.children[midIndex];
 
             // Right child
-            j = 0;
-            for (int i = midIndex + 1; i < rightTree.order; i++) {
+            int j = 0;
+            for (int i = midIndex + 1; i < rightTree.keys.length; i++) {
                 if (i == secondTreeIndex) {
                     rightTree.keys[j] = secondTree.keys[0];
                     rightTree.children[j] = secondTree.children[0];
@@ -196,7 +195,6 @@ public class rodrigonascimento_201600155174_poximdb {
                     rightTree.children[++j] = firstTree.children[i];
                 }
             }
-            
         }
 
         finalTree.children[0] = leftTree;
@@ -242,7 +240,7 @@ public class rodrigonascimento_201600155174_poximdb {
         // Copies the second half of the array
         // into the right child
         int j = 0;
-        for (int i = middleIndex + 1; i < nodeArray.length; i++) {
+        for (int i = middleIndex + 1; i < nodeArray.length -1; i++) {
             rightChild.keys[j] = nodeArray[i];
             j++;
         }
@@ -440,6 +438,40 @@ public class rodrigonascimento_201600155174_poximdb {
     }
 
     /**
+     * Returns the tree where the key is.
+     * @param tree  Tree to be searched.
+     * @param key   Desired key.
+     * @return      Tree that has the key searched.
+     */
+    public static Tree selectTree(Tree tree, String key) {
+
+        if (tree == null)
+            return null;
+
+        for (int i = 0; i < tree.order - 1; i++) {
+
+            if (tree.keys[i] == null) {
+
+                return selectTree(tree.children[i], key);
+
+            } else if (key.compareTo(tree.keys[i].key) == 0) {
+
+                return tree;
+
+            } else if (key.compareTo(tree.keys[i].key) < 0) {
+
+                return selectTree(tree.children[i], key);
+
+            } else if (tree.order - 2 == i) {
+
+                return selectTree(tree.children[i + 1], key);
+            }
+        }
+
+        return tree;
+    }
+
+    /**
      * Writes content to file.
      * 
      * @param fileName  Name of the file (with extension) to be writen.
@@ -475,6 +507,7 @@ public class rodrigonascimento_201600155174_poximdb {
 
                 node = makeNode(reader.readLine());
                 tree = insertNode(tree, node);
+                
             }
 
             // Reads the commands
@@ -489,13 +522,21 @@ public class rodrigonascimento_201600155174_poximdb {
                     case "SELECT":
 
                         String hash = line.substring(7);
-                        node = selectNode(tree, hash);
+                        Tree foundTree = selectTree(tree, hash);
 
-                        System.out.println("[" + hash + "]");
-                        if (node != null)
-                            System.out.println(node.name + ":size=" + node.size + ",hash=" + node.key);
-                        else
-                            System.out.println("-");
+                        writeToFile(args[1], "[" + hash + "]\n");
+                        if (foundTree == null) {
+                            writeToFile(args[1], "-\n");
+                            break;
+                        } else {
+                            for (int j = 0; j < foundTree.order - 1; j++) {
+                                if (foundTree.keys[j] == null) {
+                                    break;
+                                } else {
+                                    writeToFile(args[1], foundTree.keys[j].name + ":size=" + foundTree.keys[j].size + ",hash=" + foundTree.keys[j].key + "\n");
+                                }
+                            }
+                        }
 
                         break;
 
